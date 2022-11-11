@@ -18,7 +18,7 @@ void main() async {
       child: GetMaterialApp(
         title: "Application",
         debugShowCheckedModeBanner: false,
-        initialRoute: storage.read(Constants.IS_FIRST_TIME)?AppPages.INITIAL:Routes.HOME,
+        initialRoute: storage.read(Constants.IS_FIRST_TIME)==null?AppPages.INITIAL:Routes.HOME,
         getPages: AppPages.routes,
         theme: ThemeData(
           primarySwatch: Colors.blue,

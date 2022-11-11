@@ -12,14 +12,10 @@ class HelpController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    if (storage.read(Constants.IS_FIRST_TIME)) {
+    if (storage.read(Constants.IS_FIRST_TIME)==null) {
       delayAndGoToHome();
     }  else{
-
     }
-
-
   }
 
   @override
