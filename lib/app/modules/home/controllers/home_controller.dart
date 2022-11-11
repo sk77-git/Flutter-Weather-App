@@ -11,9 +11,7 @@ import 'package:moru_digital_task/app/data/response/weather_response.dart';
 import '../../../data/network/api.dart';
 
 class HomeController extends GetxController {
-
-  final count = 0.obs;
-  final  isLoading= false.obs;
+  final  isLoading= true.obs;
   final  isLocationSaved= false.obs;
   final weatherResponse= <WeatherResponse>[];
 
@@ -24,7 +22,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (storage.read(Constants.SAVED_LOCATION)=="") {
+    if (storage.read(Constants.SAVED_LOCATION)==null) {
       isLocationSaved.value=false;
     }else{
       isLocationSaved.value=true;
@@ -35,7 +33,6 @@ class HomeController extends GetxController {
    }  else{
      _getCurrentPosition();
    }
-
   }
 
   @override
@@ -46,7 +43,6 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {}
-  void increment() => count.value++;
 
 
 
@@ -57,20 +53,10 @@ class HomeController extends GetxController {
     if (data != null) {
       weatherResponse.clear();
       weatherResponse.add( WeatherResponse.fromJson(data));
-      //add the location name n TextField
       // searchTextFieldController.text= weatherResponse[0].location!.name.toString();
     }
     isLoading.value = false;
   }
-
-
-  /*
-  * 1. If location enaabled and permission granted get latlang and get weather
-  * then set weather in input filed, if user press save,
-  * keep record of that location and chnage the label of button to update
-  *
-  *
-  * */
 
 
   Future<void> _getCurrentPosition() async {
@@ -92,31 +78,33 @@ class HomeController extends GetxController {
     });
   }
 
+  /*To check if required permission are available*/
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      Get.snackbar("Permission", "Location services are disabled. Please enable the services");
+      Get.snackbar("GPS not turned ON", "Location services are disabled. Please enable the services and refresh the page.",snackPosition: SnackPosition.BOTTOM, backgroundColor: AppColors.whiteGrey);
       return false;
     }
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        Get.snackbar("Permission", "Location permissions are denied");
+        Get.snackbar("Permission Denied", "Location permissions are denied");
         return false;
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      Get.snackbar("Permission", "Location permissions are permanently denied, we cannot request permissions.");
+      Get.snackbar("Permission Denied, Search Location Manually", "Location permissions are permanently denied, we cannot request permissions.", snackPosition: SnackPosition.BOTTOM, backgroundColor: AppColors.whiteGrey);
       return false;
     }
     return true;
   }
 
 
+  /*This Function can be used later to get location name from lat lang*/
   Future<void> _getAddressFromLatLng(Position position) async {
     await placemarkFromCoordinates(
         _currentPosition!.latitude, _currentPosition!.longitude)
@@ -130,9 +118,11 @@ class HomeController extends GetxController {
     });
   }
 
+
+  /*To Update the location name that is shown on screen*/
   void onSavePressed() {
-    log("onSavePressed");
     storage.write(Constants.SAVED_LOCATION, weatherResponse[0].location!.name.toString());
+    Get.snackbar("Location saved:${weatherResponse[0].location!.name.toString()}", "This place data will be fetched next time automatically", snackPosition: SnackPosition.BOTTOM, backgroundColor: AppColors.whiteGrey);
     if (storage.read(Constants.SAVED_LOCATION)=="") {
       isLocationSaved.value=false;
     }else{
