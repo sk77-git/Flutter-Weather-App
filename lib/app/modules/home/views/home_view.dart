@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../../constants/constants.dart';
 import '../../../routes/app_pages.dart';
+import '../../../utils/delay.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/app_text.dart';
 import '../controllers/home_controller.dart';
@@ -18,6 +19,7 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    Delay delay= Delay();
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -53,8 +55,10 @@ class HomeView extends GetView<HomeController> {
                     controller: controller.searchTextFieldController,
                     style: const TextStyle(color: AppColors.onPrimary),
                     onChanged: (value) {
-                      log(value.toString());
-                      controller.getWeather(value.toString());
+                      delay.run(() {
+                        log(value.toString());
+                        controller.getWeather(value.toString());
+                      });
                     },
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(

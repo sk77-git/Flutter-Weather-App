@@ -11,5 +11,4 @@ class Api {
       return data;
     }
   }
-
 }
